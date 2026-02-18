@@ -19,7 +19,7 @@ const Menu = () => {
     );
     window.location.replace("zerodha-colne-dshboard-w8n4.vercel.app");
   } catch (err) {
-    console.log(err);
+    console.log(err); 
   }
 };
 
