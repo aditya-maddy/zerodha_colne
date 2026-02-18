@@ -25,7 +25,7 @@ const Signup = () => {
 
     alert(res.data.message); // Signup successful
    
-   window.location.href = "zerodha-colne-dshboard.vercel.app/dashboard";
+   window.location.href = "zerodha-colne-dshboard.vercel.app/";
     
   } catch (err) {
     alert(err.response?.data?.message || "Signup failed");
