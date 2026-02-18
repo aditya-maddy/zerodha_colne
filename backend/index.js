@@ -1,8 +1,7 @@
-// server.js
+
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-const path = require("path");
 const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
@@ -25,36 +24,41 @@ if (!MONGO_URL || !process.env.SECRET) {
   process.exit(1);
 }
 
-// ---------------- MONGOOSE ----------------
-mongoose.connect(MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-  .then(() => console.log("✅ DB connected"))
-  .catch(err => console.error("❌ DB connection error:", err));
-
 // ---------------- EXPRESS ----------------
 const app = express();
+
+// VERY IMPORTANT for Render (HTTPS + sessions)
+app.set("trust proxy", 1);
+
+// ---------------- MIDDLEWARE ----------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ---------------- CORS ----------------
-app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: [
+      "https://zerodha-colne-dshboard.vercel.app",
+      "https://your-frontend-name.vercel.app",
+    ],
+    credentials: true,
+  })
+);
 
 // ---------------- SESSION ----------------
-app.use(session({
-  secret: process.env.SECRET,
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    httpOnly: true,
-    secure: false, // set to true if using HTTPS
-  },
-}));
+app.use(
+  session({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      httpOnly: true,
+      secure: true,       // REQUIRED for HTTPS
+      sameSite: "none",   // REQUIRED for cross-domain
+    },
+  })
+);
 
 app.use(flash());
 
@@ -66,7 +70,13 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// ---------------- FLASH MESSAGES ----------------
+// ---------------- MONGOOSE ----------------
+mongoose
+  .connect(MONGO_URL)
+  .then(() => console.log("✅ DB connected"))
+  .catch((err) => console.error("❌ DB connection error:", err));
+
+// ---------------- FLASH ----------------
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
@@ -76,7 +86,7 @@ app.use((req, res, next) => {
 // ---------------- AUTH MIDDLEWARE ----------------
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) return next();
-  res.status(401).json({ message: "You must be logged in" });
+  return res.status(401).json({ message: "You must be logged in" });
 }
 
 // ---------------- ROUTES ----------------
@@ -84,10 +94,10 @@ app.use("/api/users", userRouter);
 
 // Health check
 app.get("/", (req, res) => {
-  res.send("🚀 Zerodha Clone Backend is running!");
+  res.send("🚀 Zerodha Clone Backend Running");
 });
 
-// ---------------- DEFAULT HOLDINGS & POSITIONS ----------------
+// ---------------- HOLDINGS ----------------
 app.get("/api/allholdings", async (req, res, next) => {
   try {
     const holdings = await HoldingsModel.find({});
@@ -97,6 +107,7 @@ app.get("/api/allholdings", async (req, res, next) => {
   }
 });
 
+// ---------------- POSITIONS ----------------
 app.get("/api/allpositions", async (req, res, next) => {
   try {
     const positions = await PositionsModel.find({});
@@ -106,12 +117,11 @@ app.get("/api/allpositions", async (req, res, next) => {
   }
 });
 
-// ---------------- USER-SPECIFIC ORDERS ----------------
+// ---------------- NEW ORDER ----------------
 app.post("/api/neworder", isLoggedIn, async (req, res, next) => {
   try {
     const { name, qty, price, orderType } = req.body;
 
-    // Simple validation
     if (!name || !qty || !price || !orderType) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -131,6 +141,7 @@ app.post("/api/neworder", isLoggedIn, async (req, res, next) => {
   }
 });
 
+// ---------------- ALL ORDERS ----------------
 app.get("/api/allorders", isLoggedIn, async (req, res, next) => {
   try {
     const orders = await OrdersModel.find({ user: req.user._id });
@@ -140,28 +151,15 @@ app.get("/api/allorders", isLoggedIn, async (req, res, next) => {
   }
 });
 
-// ---------------- DASHBOARD SPA ----------------
-const dashboardPath = path.join(__dirname, "../dashboard/dist");
-app.use("/dashboard", isLoggedIn, express.static(dashboardPath));
-app.get(/^\/dashboard\/.*/, isLoggedIn, (req, res) => {
-  res.sendFile(path.join(dashboardPath, "index.html"));
-});
-
-// ---------------- REACT CLIENT ----------------
-const clientBuildPath = path.join(__dirname, "client/build");
-app.use(express.static(clientBuildPath));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(clientBuildPath, "index.html"));
-});
-
-// ---------------- ERROR HANDLING ----------------
+// ---------------- ERROR HANDLER ----------------
 app.use((err, req, res, next) => {
   console.error("❌ ERROR:", err);
-  res.status(err.status || 500).json({ error: err.message || "Server error" });
+  res.status(err.status || 500).json({
+    error: err.message || "Server error",
+  });
 });
 
 // ---------------- START SERVER ----------------
 app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });

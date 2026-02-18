@@ -17,7 +17,7 @@ const Menu = () => {
       {},
       { withCredentials: true }
     );
-    window.location.replace("http://localhost:5173/");
+    window.location.replace("zerodha-colne-dshboard-w8n4.vercel.app");
   } catch (err) {
     console.log(err);
   }

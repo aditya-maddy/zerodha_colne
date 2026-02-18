@@ -12,9 +12,12 @@ import PricingPage from './landing_page/pricing/PricingPage.jsx';
 import SupportPage from './landing_page/support/SupportPage.jsx';
 import Navbar from './landing_page//Navbar';
 import Footer from './landing_page//Footer';
-
-
 import NotFound from './landing_page/NotFound.jsx';
+import axios from "axios";
+
+axios.defaults.baseURL = "https://your-backend-name.onrender.com";
+axios.defaults.withCredentials = true;
+
 
 
 

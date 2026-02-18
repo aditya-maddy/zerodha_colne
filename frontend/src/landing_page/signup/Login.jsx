@@ -18,7 +18,7 @@ const Login = () => {
       }, { withCredentials: true });
 
       if (res.data.redirect) window.location.href = res.data.redirect;
-       window.location.href = "http://localhost:5174/dashboard";
+       window.location.href = "zerodha-colne-dshboard.vercel.app/dashboard";
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
     } finally {
