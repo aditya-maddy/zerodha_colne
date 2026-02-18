@@ -74,7 +74,7 @@ const Orders = () => {
   useEffect(() => {
   const fetchOrders = () => {
   axios
-    .get("http://localhost:3002/allorders", {
+    .get("https://zerodha-colne-zsx2.onrender.com//allorders", {
       withCredentials: true,
     })
     .then((res) => {

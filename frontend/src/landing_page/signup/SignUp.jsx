@@ -14,7 +14,7 @@ const Signup = () => {
 
   try {
     const res = await axios.post(
-      "http://localhost:3002/signup",
+      "https://zerodha-colne-zsx2.onrender.com//signup",
       {
         username: name,
         email,
