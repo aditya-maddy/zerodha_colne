@@ -69,6 +69,11 @@ function isLoggedIn(req, res, next) {
 // ---------------- ROUTES ----------------
 app.use("/", userRouter);
 
+app.get("/", (req, res) => {
+  res.send("Zerodha Clone Backend is Running 🚀");
+});
+
+
 // ---------------- DEFAULT HOLDINGS & POSITIONS ----------------
 app.get("/allholdings", async (req, res) => {
   try {
