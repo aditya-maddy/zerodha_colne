@@ -13,7 +13,7 @@ const Menu = () => {
  const handleLogout = async () => {
   try {
     await axios.post(
-      "https://zerodha-colne-zsx2.onrender.com//logout",
+      "https://zerodha-colne-zsx2.onrender.com/logout",
       {},
       { withCredentials: true }
     );

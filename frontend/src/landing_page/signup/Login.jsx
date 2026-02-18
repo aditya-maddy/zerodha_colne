@@ -12,7 +12,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("https://zerodha-colne-zsx2.onrender.com//login", {
+      const res = await axios.post("https://zerodha-colne-zsx2.onrender.com/login", {
         username,
         password,
       }, { withCredentials: true });

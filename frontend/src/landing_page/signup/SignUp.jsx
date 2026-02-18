@@ -14,7 +14,7 @@ const Signup = () => {
 
   try {
     const res = await axios.post(
-      "https://zerodha-colne-zsx2.onrender.com//signup",
+      "https://zerodha-colne-zsx2.onrender.com/signup",
       {
         username: name,
         email,
