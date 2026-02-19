@@ -27,7 +27,6 @@ router.post("/logout", (req, res, next) => {
 
     req.session.destroy(() => {
       res.clearCookie("connect.sid"); // important
-      res.redirect("http://zerodha-colne-dshboard-w8n4.vercel.app")
       res.json({ message: "Logged out successfully" });
     });
   });
