@@ -8,7 +8,7 @@ const LocalStrategy = require("passport-local");
 const cors = require("cors");
 
 const User = require("./models/user");
-const userRouter = require("./routes/users");
+const userRouter = require("./routes/user");
 const HoldingsModel = require("./models/HoldingsModel");
 const PositionsModel = require("./models/PositionsModel");
 const OrdersModel = require("./models/OrdersModel");
