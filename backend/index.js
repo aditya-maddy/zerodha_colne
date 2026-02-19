@@ -37,18 +37,19 @@ app.use(
 // ---------------- SESSION ----------------
 app.use(
   session({
-    name: "sid",                   
+    name: "sid",
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      httpOnly: true,               
-      secure: true,                   
-      sameSite: "none",             
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // only true in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
   })
 );
+
 
 app.use(flash());
 
