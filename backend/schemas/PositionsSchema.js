@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 
-// --------- PositionsSchema ---------
 const PositionsSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // ✅ user reference
   product: String,
   name: String,
   qty: Number,
@@ -13,4 +11,4 @@ const PositionsSchema = new mongoose.Schema({
   isLoss: Boolean,
 });
 
-module.exports = mongoose.model("Positions", PositionsSchema);
+module.exports = PositionsSchema;

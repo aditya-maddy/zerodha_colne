@@ -77,22 +77,14 @@ app.use("/api/users", userRouter);
 
 // ---------------- HOLDINGS ----------------
 app.get("/api/allholdings", isLoggedIn, async (req, res) => {
-  try {
-    const holdings = await HoldingsModel.find({ user: req.user._id }).sort({ _id: -1 });
-    res.json(holdings);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const holdings = await HoldingsModel.find({});
+  res.json(holdings);
 });
 
 // ---------------- POSITIONS ----------------
 app.get("/api/allpositions", isLoggedIn, async (req, res) => {
-  try {
-    const positions = await PositionsModel.find({ user: req.user._id }).sort({ _id: -1 });
-    res.json(positions);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const positions = await PositionsModel.find({});
+  res.json(positions);
 });
 
 // ---------------- NEW ORDER ----------------
