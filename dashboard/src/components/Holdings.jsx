@@ -6,10 +6,17 @@ const Holdings = () => {
   const [allHoldings, setAllHoldings] = useState([]);
 
   useEffect(() => {
-    axios.get("https://zerodha-colne-zsx2.onrender.com/api/allholdings").then((res) => {
+  axios
+    .get("https://zerodha-colne-zsx2.onrender.com/api/allholdings", {
+      withCredentials: true, // ✅ important for session cookies
+    })
+    .then((res) => {
       setAllHoldings(res.data);
+    })
+    .catch((err) => {
+      console.error("Holdings error:", err.response || err);
     });
-  }, []);
+}, []);
 
   //const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
  const labels = allHoldings.map((stock) => stock.name);
@@ -26,21 +33,6 @@ const data = {
 };
 
 
-// export const data = {
-//   labels,
-  // datasets: [
-  //   {
-  //     label: 'Dataset 1',
-  //     data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-  //     backgroundColor: 'rgba(255, 99, 132, 0.5)',
-  //   },
-//     {
-//       label: 'Dataset 2',
-//       data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
-//       backgroundColor: 'rgba(53, 162, 235, 0.5)',
-//     },
-//   ],
-// };
 
   return (
     <>

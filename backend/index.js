@@ -37,14 +37,15 @@ app.use(
 // ---------------- SESSION ----------------
 app.use(
   session({
+    name: "sid",                   
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: true,      // REQUIRED for HTTPS
-      sameSite: "none",  // REQUIRED for cross-site
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      httpOnly: true,               
+      secure: true,                   
+      sameSite: "none",             
     },
   })
 );
@@ -76,14 +77,22 @@ app.use("/api/users", userRouter);
 
 // ---------------- HOLDINGS ----------------
 app.get("/api/allholdings", isLoggedIn, async (req, res) => {
-  const holdings = await HoldingsModel.find({});
-  res.json(holdings);
+  try {
+    const holdings = await HoldingsModel.find({ user: req.user._id }).sort({ _id: -1 });
+    res.json(holdings);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ---------------- POSITIONS ----------------
 app.get("/api/allpositions", isLoggedIn, async (req, res) => {
-  const positions = await PositionsModel.find({});
-  res.json(positions);
+  try {
+    const positions = await PositionsModel.find({ user: req.user._id }).sort({ _id: -1 });
+    res.json(positions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ---------------- NEW ORDER ----------------
@@ -104,10 +113,15 @@ app.post("/api/neworder", isLoggedIn, async (req, res) => {
 
 // ---------------- ALL ORDERS ----------------
 app.get("/api/allorders", isLoggedIn, async (req, res) => {
-  const orders = await OrdersModel.find({ user: req.user._id });
-  res.json(orders);
+  try {
+   
+    const orders = await OrdersModel.find({ user: req.user._id }).sort({ _id: -1 });
+    res.json(orders);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
 });
-
 // ---------------- HEALTH ----------------
 app.get("/", (req, res) => {
   res.send("🚀 Backend Running");
