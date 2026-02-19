@@ -12,22 +12,25 @@ const Login = () => {
   setLoading(true);
 
   try {
-    await axios.post(
+    // Send login request with credentials
+    const res = await axios.post(
       "https://zerodha-colne-zsx2.onrender.com/api/users/login",
       { username, password },
-      { withCredentials: true }
+      { withCredentials: true } // important for cookies
     );
 
-    window.location.assign(
-      "https://zerodha-colne-dshboard.vercel.app"
-    );
-
+    // Check if backend confirms login (cookie should be set by now)
+    if (res.status === 200) {
+      // ✅ Only redirect after successful login
+      window.location.href = "https://zerodha-colne-dshboard.vercel.app/dashboard";
+    }
   } catch (err) {
     alert(err.response?.data?.message || "Login failed");
   } finally {
     setLoading(false);
   }
 };
+
 
 
   return (
