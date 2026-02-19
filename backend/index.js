@@ -1,4 +1,3 @@
-
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -26,22 +25,18 @@ if (!MONGO_URL || !process.env.SECRET) {
 
 // ---------------- EXPRESS ----------------
 const app = express();
-
-// VERY IMPORTANT for Render (HTTPS + sessions)
-app.set("trust proxy", 1);
+app.set("trust proxy", 1); // Required for Render HTTPS
 
 // ---------------- MIDDLEWARE ----------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ---------------- CORS ----------------
+// ---------------- ✅ FIXED CORS ----------------
+// This allows ALL Vercel deployments (preview + production)
 app.use(
   cors({
-    origin: [
-      "https://zerodha-colne-dshboard.vercel.app",
-      "https://your-frontend-name.vercel.app",
-    ],
-    credentials: true,
+    origin: true,        // automatically reflect request origin
+    credentials: true,   // allow cookies
   })
 );
 
@@ -52,10 +47,10 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: true,       // REQUIRED for HTTPS
-      sameSite: "none",   // REQUIRED for cross-domain
+      secure: true,      // required for HTTPS (Render)
+      sameSite: "none",  // required for cross-domain
     },
   })
 );
