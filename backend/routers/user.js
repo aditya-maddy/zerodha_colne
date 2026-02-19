@@ -8,7 +8,8 @@ router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
     const newUser = new User({ username, email });
-    await User.register(newUser, password); // passport-local-mongoose
+    await User.register(newUser, password);
+
     res.status(200).json({ message: "Signup successful" });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -16,8 +17,16 @@ router.post("/signup", async (req, res) => {
 });
 
 // ---------------- LOGIN ----------------
-router.post("/login", passport.authenticate("local"), (req, res) => {
-  res.status(200).json({ message: "Login successful", redirect: "/dashboard" });
+router.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user) => {
+    if (err) return next(err);
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+
+    req.logIn(user, (err) => {
+      if (err) return next(err);
+      return res.status(200).json({ message: "Login successful" });
+    });
+  })(req, res, next);
 });
 
 // ---------------- LOGOUT ----------------
@@ -26,11 +35,10 @@ router.post("/logout", (req, res, next) => {
     if (err) return next(err);
 
     req.session.destroy(() => {
-      res.clearCookie("connect.sid"); // important
+      res.clearCookie("connect.sid");
       res.json({ message: "Logged out successfully" });
     });
   });
 });
-
 
 module.exports = router;

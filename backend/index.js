@@ -7,36 +7,30 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const cors = require("cors");
 
-// ---------------- Models & Routers ----------------
 const User = require("./models/user");
-const userRouter = require("./routers/user");
-const HoldingsModel = require("./models/HoldingsModels");
+const userRouter = require("./routes/users");
+const HoldingsModel = require("./models/HoldingsModel");
 const PositionsModel = require("./models/PositionsModel");
 const OrdersModel = require("./models/OrdersModel");
 
-// ---------------- CONFIG ----------------
 const PORT = process.env.PORT || 3002;
 const MONGO_URL = process.env.MONGO_URL;
 
-if (!MONGO_URL || !process.env.SECRET) {
-  console.error("❌ Missing MONGO_URL or SECRET in .env");
-  process.exit(1);
-}
-
-// ---------------- EXPRESS ----------------
 const app = express();
-app.set("trust proxy", 1); // Required for Render HTTPS
+app.set("trust proxy", 1); // IMPORTANT for Render
 
 // ---------------- MIDDLEWARE ----------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ---------------- ✅ FIXED CORS ----------------
-// This allows ALL Vercel deployments (preview + production)
+// ---------------- CORS ----------------
 app.use(
   cors({
-    origin: true,        // automatically reflect request origin
-    credentials: true,   // allow cookies
+    origin: [
+      "https://zerodha-colne-dshboard.vercel.app",
+      "https://zerodha-colne-dshboard-w8n4.vercel.app"
+    ],
+    credentials: true,
   })
 );
 
@@ -49,8 +43,8 @@ app.use(
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: true,      // required for HTTPS (Render)
-      sameSite: "none",  // required for cross-domain
+      secure: true,      // REQUIRED for HTTPS
+      sameSite: "none",  // REQUIRED for cross-site
     },
   })
 );
@@ -65,18 +59,11 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// ---------------- MONGOOSE ----------------
+// ---------------- DATABASE ----------------
 mongoose
   .connect(MONGO_URL)
   .then(() => console.log("✅ DB connected"))
-  .catch((err) => console.error("❌ DB connection error:", err));
-
-// ---------------- FLASH ----------------
-app.use((req, res, next) => {
-  res.locals.success = req.flash("success");
-  res.locals.error = req.flash("error");
-  next();
-});
+  .catch((err) => console.error(err));
 
 // ---------------- AUTH MIDDLEWARE ----------------
 function isLoggedIn(req, res, next) {
@@ -87,74 +74,51 @@ function isLoggedIn(req, res, next) {
 // ---------------- ROUTES ----------------
 app.use("/api/users", userRouter);
 
-// Health check
-app.get("/", (req, res) => {
-  res.send("🚀 Zerodha Clone Backend Running");
-});
-
 // ---------------- HOLDINGS ----------------
-app.get("/api/allholdings", async (req, res, next) => {
-  try {
-    const holdings = await HoldingsModel.find({});
-    res.json(holdings);
-  } catch (err) {
-    next(err);
-  }
+app.get("/api/allholdings", isLoggedIn, async (req, res) => {
+  const holdings = await HoldingsModel.find({});
+  res.json(holdings);
 });
 
 // ---------------- POSITIONS ----------------
-app.get("/api/allpositions", async (req, res, next) => {
-  try {
-    const positions = await PositionsModel.find({});
-    res.json(positions);
-  } catch (err) {
-    next(err);
-  }
+app.get("/api/allpositions", isLoggedIn, async (req, res) => {
+  const positions = await PositionsModel.find({});
+  res.json(positions);
 });
 
 // ---------------- NEW ORDER ----------------
-app.post("/api/neworder", isLoggedIn, async (req, res, next) => {
-  try {
-    const { name, qty, price, orderType } = req.body;
+app.post("/api/neworder", isLoggedIn, async (req, res) => {
+  const { name, qty, price, orderType } = req.body;
 
-    if (!name || !qty || !price || !orderType) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
+  const order = new OrdersModel({
+    name,
+    qty,
+    price,
+    orderType,
+    user: req.user._id,
+  });
 
-    const order = new OrdersModel({
-      name,
-      qty,
-      price,
-      orderType,
-      user: req.user._id,
-    });
-
-    const savedOrder = await order.save();
-    res.status(201).json(savedOrder);
-  } catch (err) {
-    next(err);
-  }
+  const savedOrder = await order.save();
+  res.status(201).json(savedOrder);
 });
 
 // ---------------- ALL ORDERS ----------------
-app.get("/api/allorders", isLoggedIn, async (req, res, next) => {
-  try {
-    const orders = await OrdersModel.find({ user: req.user._id });
-    res.json(orders);
-  } catch (err) {
-    next(err);
-  }
+app.get("/api/allorders", isLoggedIn, async (req, res) => {
+  const orders = await OrdersModel.find({ user: req.user._id });
+  res.json(orders);
 });
 
-// ---------------- ERROR HANDLER ----------------
+// ---------------- HEALTH ----------------
+app.get("/", (req, res) => {
+  res.send("🚀 Backend Running");
+});
+
+// ---------------- ERROR ----------------
 app.use((err, req, res, next) => {
-  console.error("❌ ERROR:", err);
-  res.status(err.status || 500).json({
-    error: err.message || "Server error",
-  });
+  console.error(err);
+  res.status(500).json({ error: err.message });
 });
 
-// ---------------- START SERVER ----------------
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`✅ Server running on ${PORT}`);
 });
