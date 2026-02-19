@@ -9,7 +9,7 @@ const cors = require("cors");
 
 const User = require("./models/user");
 const userRouter = require("./routers/users");
-const HoldingsModel = require("./models/HoldingsModel");
+const HoldingsModel = require("./models/HoldingsModels");
 const PositionsModel = require("./models/PositionsModel");
 const OrdersModel = require("./models/OrdersModel");
 
