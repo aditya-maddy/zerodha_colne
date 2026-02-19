@@ -9,32 +9,29 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const res = await axios.post(
-      "https://zerodha-colne-zsx2.onrender.com/signup",
-      {
-        username: name,
-        email,
-        password,
-      },
-      { withCredentials: true }
-    );
+    try {
+      const res = await axios.post(
+        "https://zerodha-colne-zsx2.onrender.com/api/users/signup",
+        { username: name, email, password },
+        { withCredentials: true }
+      );
 
-    alert(res.data.message); // Signup successful
-   
-   window.location.href = "zerodha-colne-dshboard.vercel.app/";
-    
-  } catch (err) {
-    alert(err.response?.data?.message || "Signup failed");
-  } finally {
-    setLoading(false);
-  }
-};
 
-  
+      alert(res.data.message); // Signup successful
+
+      window.location.href = "https://zerodha-colne-dshboard.vercel.app";
+
+    } catch (err) {
+      alert(err.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   return (
     <div className="signup-container">
