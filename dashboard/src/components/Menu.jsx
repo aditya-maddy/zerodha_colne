@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+
 
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0);
@@ -10,21 +10,13 @@ const Menu = () => {
     setSelectedMenu(index);
   };
 
- const handleLogout = async () => {
-  try {
-    await axios.post(
-      "https://zerodha-colne-zsx2.onrender.com/api/users/logout",
-      {},
-      { withCredentials: true }
-    );
+const handleLogout = () => {
+  // 1️⃣ Remove JWT token from browser
+  localStorage.removeItem("token");
 
-    window.location.assign(
-      "https://zerodha-colne-dshboard-w8n4.vercel.app"
-    );
-
-  } catch (err) {
-    console.log(err);
-  }
+  // 2️⃣ Redirect to login page
+  window.location.href =
+    "https://zerodha-colne-dshboard-w8n4.vercel.app/login";
 };
 
 

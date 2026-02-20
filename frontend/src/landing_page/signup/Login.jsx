@@ -12,18 +12,18 @@ const Login = () => {
   setLoading(true);
 
   try {
-    // Send login request with credentials
     const res = await axios.post(
       "https://zerodha-colne-zsx2.onrender.com/api/users/login",
-      { username, password },
-      { withCredentials: true } // important for cookies
+      { username, password }
     );
 
-    // Check if backend confirms login (cookie should be set by now)
-    if (res.status === 200) {
-      // ✅ Only redirect after successful login
-      window.location.href = "https://zerodha-colne-dshboard.vercel.app/dashboard";
-    }
+    // ✅ Save JWT token
+    localStorage.setItem("token", res.data.token);
+
+    // ✅ Redirect after saving
+    window.location.href =
+      "https://zerodha-colne-dshboard.vercel.app/dashboard";
+
   } catch (err) {
     alert(err.response?.data?.message || "Login failed");
   } finally {

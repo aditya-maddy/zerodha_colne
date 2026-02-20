@@ -8,28 +8,28 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+ const handleSignup = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const res = await axios.post(
-        "https://zerodha-colne-zsx2.onrender.com/api/users/signup",
-        { username: name, email, password },
-        { withCredentials: true }
-      );
+  try {
+    const res = await axios.post(
+      "https://zerodha-colne-zsx2.onrender.com/api/users/signup",
+      { username: name, email, password }
+    );
 
+    alert(res.data.message);
 
-      alert(res.data.message); // Signup successful
+    // After signup → redirect to login page (better UX)
+    window.location.href =
+      "https://zerodha-colne-dshboard-w8n4.vercel.app/login";
 
-      window.location.href = "https://zerodha-colne-dshboard.vercel.app";
-
-    } catch (err) {
-      alert(err.response?.data?.message || "Signup failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err) {
+    alert(err.response?.data?.message || "Signup failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
 
 
