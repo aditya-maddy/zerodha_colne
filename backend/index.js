@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const cookieParser = require("cookie-parser"); // ✅ required
 
 const User = require("./models/user");
 const userRouter = require("./routers/users");
@@ -19,16 +20,17 @@ app.set("trust proxy", 1); // IMPORTANT for Render
 // ---------------- MIDDLEWARE ----------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); // ✅ VERY IMPORTANT (you were missing this)
 
 // ---------------- CORS ----------------
 app.use(
   cors({
     origin: [
       "https://zerodha-colne-dshboard.vercel.app",
-      "https://zerodha-colne-dshboard-w8n4.vercel.app",
+      "https://zerodha-colne-dshboard-w8n4.vercel.app"
     ],
-    credentials: true,
-  }),
+    credentials: true
+  })
 );
 
 // ---------------- DATABASE ----------------
@@ -52,7 +54,6 @@ app.get("/api/allpositions", auth, async (req, res) => {
   res.json(positions);
 });
 
-// ---------------- NEW ORDER ----------------
 // create new order (current user)
 app.post("/api/neworder", auth, async (req, res) => {
   const { name, qty, price, orderType } = req.body;
@@ -62,7 +63,7 @@ app.post("/api/neworder", auth, async (req, res) => {
     qty,
     price,
     orderType,
-    user: req.user.id, // link order to current user
+    user: req.user.id
   });
 
   const savedOrder = await order.save();
