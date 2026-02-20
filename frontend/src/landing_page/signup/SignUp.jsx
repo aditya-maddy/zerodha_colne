@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../../api"; // import the api instance
 import "./Signup.css";
 
 const Signup = () => {
@@ -8,43 +8,39 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-const handleSignup = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const res = await axios.post(
-      "https://zerodha-colne-zsx2.onrender.com/api/users/signup",
-      { username: name, email, password }
-    );
+    try {
+      const res = await api.post("/api/users/signup", {
+        username: name,
+        email,
+        password,
+      });
 
-    // Save JWT token immediately
-    localStorage.setItem("token", res.data.token);
+      // Save JWT token
+      localStorage.setItem("token", res.data.token);
 
-    // Redirect to dashboard
-    window.location.href =
-      "https://zerodha-colne-dshboard.vercel.app/dashboard";
+      // Redirect to dashboard
+      window.location.href = "https://zerodha-colne-dshboard.vercel.app/dashboard";
 
-  } catch (err) {
-    alert(err.response?.data?.message || "Signup failed");
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+    } catch (err) {
+      alert(err.response?.data?.message || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="signup-container">
       <h2>Create your Zerodha account</h2>
-      <p className="subtitle">Start investing in stocks & mutual funds</p>
       <form onSubmit={handleSignup}>
         <input type="text" placeholder="Full name" value={name} onChange={e => setName(e.target.value)} required />
         <input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
         <button type="submit" disabled={loading}>{loading ? "Creating account..." : "Create account"}</button>
       </form>
-      <p className="login-text">Already have an account? <a href="/login">Login</a></p>
     </div>
   );
 };

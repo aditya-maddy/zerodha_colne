@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../../api";
 import "./Signup.css";
 
 const Login = () => {
@@ -7,31 +7,25 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
- const handleLogin = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const res = await axios.post(
-      "https://zerodha-colne-zsx2.onrender.com/api/users/login",
-      { username, password }
-    );
+    try {
+      const res = await api.post("/api/users/login", { username, password });
 
-    // ✅ Save JWT token
-    localStorage.setItem("token", res.data.token);
+      // Save JWT token
+      localStorage.setItem("token", res.data.token);
 
-    // ✅ Redirect after saving
-    window.location.href =
-      "https://zerodha-colne-dshboard.vercel.app/dashboard";
+      // Redirect to dashboard
+      window.location.href = "https://zerodha-colne-dshboard.vercel.app/dashboard";
 
-  } catch (err) {
-    alert(err.response?.data?.message || "Login failed");
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+    } catch (err) {
+      alert(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="signup-container">
@@ -41,7 +35,6 @@ const Login = () => {
         <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
         <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
       </form>
-      <p className="login-text">Create an account? <a href="/signup">Signup</a></p>
     </div>
   );
 };

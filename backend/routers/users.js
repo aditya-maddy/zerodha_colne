@@ -5,13 +5,14 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 // ---------------- SIGNUP ----------------
-// ---------------- SIGNUP ----------------
 router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create user
     const newUser = new User({
       username,
       email,
@@ -20,13 +21,14 @@ router.post("/signup", async (req, res) => {
 
     await newUser.save();
 
-    // Generate token immediately
+    // Generate JWT token immediately
     const token = jwt.sign(
       { id: newUser._id, username: newUser.username },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
+    // Send token back
     res.status(201).json({ message: "Signup successful", token });
 
   } catch (err) {
