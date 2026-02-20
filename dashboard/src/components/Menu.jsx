@@ -11,7 +11,8 @@ const Menu = () => {
   };
 
 const handleLogout = () => {
-  localStorage.removeItem("token"); // remove JWT
+  localStorage.removeItem("token"); // Remove JWT
+  // Redirect back to login domain
   window.location.href = "https://zerodha-colne-dshboard-w8n4.vercel.app/login";
 };
 

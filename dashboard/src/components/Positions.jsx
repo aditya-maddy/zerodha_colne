@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../api"; // ✅ use JWT instance
 
 const Positions = () => {
   const [allPositions, setAllPositions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("https://zerodha-colne-zsx2.onrender.com/api/allpositions")
-      .then((res) => {
-        // Make sure backend sends: { allPositions: [...] }
+    const fetchPositions = async () => {
+      try {
+        const res = await API.get("/api/allpositions"); // JWT sent automatically
         setAllPositions(res.data);
+      } catch (err) {
+        console.error("Positions error:", err.response || err);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchPositions();
   }, []);
 
   if (loading) return <p>Loading positions...</p>;
@@ -25,7 +26,6 @@ const Positions = () => {
   return (
     <>
       <h3 className="title">Positions ({allPositions.length})</h3>
-
       <div className="order-table">
         <table>
           <thead>
@@ -53,9 +53,7 @@ const Positions = () => {
                   <td>{stock.qty}</td>
                   <td>{stock.avg.toFixed(2)}</td>
                   <td>{stock.price.toFixed(2)}</td>
-                  <td className={profClass}>
-                    {(curValue - stock.avg * stock.qty).toFixed(2)}
-                  </td>
+                  <td className={profClass}>{(curValue - stock.avg * stock.qty).toFixed(2)}</td>
                   <td className={dayClass}>{stock.day}</td>
                 </tr>
               );

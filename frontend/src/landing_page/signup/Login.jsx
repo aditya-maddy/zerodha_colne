@@ -2,6 +2,7 @@ import { useState } from "react";
 import api from "../../api";
 import "./Signup.css";
 
+
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -12,13 +13,14 @@ const Login = () => {
     setLoading(true);
 
     try {
+      
       const res = await api.post("/api/users/login", { username, password });
-
+      const token = res.data.token;
       // Save JWT token
       localStorage.setItem("token", res.data.token);
 
       // Redirect to dashboard
-      window.location.href = "https://zerodha-colne-dshboard.vercel.app";
+     window.location.href = `https://zerodha-colne-dshboard.vercel.app?token=${token}`;
 
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
