@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 // ---------------- SIGNUP ----------------
+// ---------------- SIGNUP ----------------
 router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -19,7 +20,15 @@ router.post("/signup", async (req, res) => {
 
     await newUser.save();
 
-    res.status(201).json({ message: "Signup successful" });
+    // Generate token immediately
+    const token = jwt.sign(
+      { id: newUser._id, username: newUser.username },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.status(201).json({ message: "Signup successful", token });
+
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

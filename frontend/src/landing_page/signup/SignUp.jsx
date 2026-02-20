@@ -8,7 +8,7 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
- const handleSignup = async (e) => {
+const handleSignup = async (e) => {
   e.preventDefault();
   setLoading(true);
 
@@ -18,11 +18,12 @@ const Signup = () => {
       { username: name, email, password }
     );
 
-    alert(res.data.message);
+    // Save JWT token immediately
+    localStorage.setItem("token", res.data.token);
 
-    // After signup → redirect to login page (better UX)
+    // Redirect to dashboard
     window.location.href =
-      "https://zerodha-colne-dshboard-w8n4.vercel.app/login";
+      "https://zerodha-colne-dshboard.vercel.app/dashboard";
 
   } catch (err) {
     alert(err.response?.data?.message || "Signup failed");
