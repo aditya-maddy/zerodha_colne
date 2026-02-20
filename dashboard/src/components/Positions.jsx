@@ -8,7 +8,7 @@ const Positions = () => {
   useEffect(() => {
     const fetchPositions = async () => {
       try {
-        const res = await API.get("allpositions"); // JWT sent automatically
+        const res = await API.get("/api/allpositions"); // JWT sent automatically
         setAllPositions(res.data);
       } catch (err) {
         console.error("Positions error:", err.response || err);

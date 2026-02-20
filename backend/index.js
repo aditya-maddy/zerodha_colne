@@ -38,23 +38,23 @@ mongoose
   .catch((err) => console.error(err));
 
 // ---------------- ROUTES ----------------
-app.use("users", userRouter);
+app.use("/api/users", userRouter);
 
 // all holdings (visible to all logged-in users)
-app.get("/allholdings", auth, async (req, res) => {
+app.get("/api/allholdings", auth, async (req, res) => {
   const holdings = await HoldingsModel.find({});
   res.json(holdings);
 });
 
 // all positions (visible to all logged-in users)
-app.get("/allpositions", auth, async (req, res) => {
+app.get("/api/allpositions", auth, async (req, res) => {
   const positions = await PositionsModel.find({});
   res.json(positions);
 });
 
 // ---------------- NEW ORDER ----------------
 // create new order (current user)
-app.post("/neworder", auth, async (req, res) => {
+app.post("/api/neworder", auth, async (req, res) => {
   const { name, qty, price, orderType } = req.body;
 
   const order = new OrdersModel({
@@ -70,7 +70,7 @@ app.post("/neworder", auth, async (req, res) => {
 });
 
 // get orders of current user only
-app.get("/allorders", auth, async (req, res) => {
+app.get("/api/allorders", auth, async (req, res) => {
   const orders = await OrdersModel.find({ user: req.user.id }).sort({ _id: -1 });
   res.json(orders);
 });

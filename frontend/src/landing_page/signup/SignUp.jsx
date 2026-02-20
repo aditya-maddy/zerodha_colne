@@ -24,7 +24,9 @@ const Signup = () => {
       localStorage.setItem("token", res.data.token);
       
       // Redirect to dashboard
-      window.location.href = `https://zerodha-colne-dshboard.vercel.app?token=${token}`;
+     setTimeout(() => {
+      window.location.href = "https://zerodha-colne-dshboard.vercel.app";
+    }, 5000); 
 
     } catch (err) {
       alert(err.response?.data?.message || "Signup failed");
