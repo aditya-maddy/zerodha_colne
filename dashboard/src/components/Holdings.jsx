@@ -8,7 +8,7 @@ const Holdings = () => {
   useEffect(() => {
     const fetchHoldings = async () => {
       try {
-        const res = await API.get("/api/allholdings"); // JWT sent automatically
+        const res = await API.get("/allholdings"); // JWT sent automatically
         setAllHoldings(res.data);
       } catch (err) {
         console.error("Holdings error:", err.response || err);

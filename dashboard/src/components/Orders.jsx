@@ -8,7 +8,7 @@ const Orders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await API.get("/api/allorders"); // JWT sent automatically
+        const res = await API.get("/allorders"); // JWT sent automatically
         setAllOrders(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error("Orders error:", err.response?.status || err);
