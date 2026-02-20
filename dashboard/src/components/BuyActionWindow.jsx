@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import GeneralContext from "./GeneralContext";
-import axios from "axios"; 
 import "./BuyActionWindow.css";
+import api from "../api";
 
 const BuyActionWindow = ({ uid }) => {
   const [stockQuantity, setStockQuantity] = useState(1);
@@ -9,30 +9,24 @@ const BuyActionWindow = ({ uid }) => {
 
   const { closeBuyWindow } = useContext(GeneralContext);
 
-  const handleBuyClick = async () => {
-    try {
-      const response = await axios.post(
-        "https://zerodha-colne-zsx2.onrender.com/api/neworder", 
-        {
-          name: uid,
-          qty: Number(stockQuantity),
-          price: Number(stockPrice),
-          orderType: "BUY",
-        },
-        {
-          withCredentials: true, 
-        }
-      );
+const handleBuyClick = async () => {
+  try {
+    const response = await api.post("/api/neworder", {
+      name: uid,
+      qty: Number(stockQuantity),
+      price: Number(stockPrice),
+      orderType: "BUY",
+    });
 
-      console.log("Order saved:", response.data);
-      closeBuyWindow();
-      window.location.href = "/orders";
-      
-    } catch (err) {
-      console.error("Order save error:", err.response?.status, err.message);
-      alert("Failed to save order");
-    }
-  };
+    console.log("Order saved:", response.data);
+    closeBuyWindow();
+    window.location.href = "/orders";
+
+  } catch (err) {
+    console.error("Order save error:", err.response?.status, err.message);
+    alert("Failed to save order");
+  }
+};
 
   const handleCancelClick = () => {
     closeBuyWindow();
