@@ -1,33 +1,45 @@
 import { useState } from "react";
-import api from "../../api";
+import axios from "axios";
 import "./Signup.css";
-
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      
-      const res = await api.post("/api/users/login", { username, password });
-      const token = res.data.token;
-      // Save JWT token
-      localStorage.setItem("token", res.data.token);
+  try {
+    // Trim inputs to avoid spaces
+    const res = await axios.post(
+      "https://zerodha-colne-zsx2.onrender.com/api/users/login",
+      {
+        username: username.trim(),
+        password: password.trim(),
+      }
+    );
 
-      // Redirect to dashboard
-     window.location.href = `https://zerodha-colne-dshboard.vercel.app?token=${token}`;
-
-    } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
-    } finally {
-      setLoading(false);
+    const token = res.data.token;
+    if (!token) {
+      alert("Login failed: no token received");
+      return;
     }
-  };
+
+    // Save JWT
+    localStorage.setItem("token", token);
+
+    // Redirect to dashboard
+    window.location.href = "https://zerodha-colne-dshboard.vercel.app/dashboard";
+
+  } catch (err) {
+    alert(err.response?.data?.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="signup-container">
@@ -37,6 +49,7 @@ const Login = () => {
         <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
         <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
       </form>
+      <p className="login-text">Create an account? <a href="/signup">Signup</a></p>
     </div>
   );
 };
