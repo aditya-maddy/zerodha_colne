@@ -31,7 +31,7 @@ const handleLogin = async (e) => {
     localStorage.setItem("token", token);
 
     // Redirect to dashboard
-    window.location.href = "https://zerodha-colne-dshboard.vercel.app/dashboard";
+    window.location.href = "https://zerodha-colne-dshboard.vercel.app";
 
   } catch (err) {
     alert(err.response?.data?.message || "Login failed");

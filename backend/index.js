@@ -40,19 +40,20 @@ mongoose
 // ---------------- ROUTES ----------------
 app.use("/api/users", userRouter);
 
-// ---------------- HOLDINGS ----------------
+// all holdings (visible to all logged-in users)
 app.get("/api/allholdings", auth, async (req, res) => {
   const holdings = await HoldingsModel.find({});
   res.json(holdings);
 });
 
-// ---------------- POSITIONS ----------------
+// all positions (visible to all logged-in users)
 app.get("/api/allpositions", auth, async (req, res) => {
   const positions = await PositionsModel.find({});
   res.json(positions);
 });
 
 // ---------------- NEW ORDER ----------------
+// create new order (current user)
 app.post("/api/neworder", auth, async (req, res) => {
   const { name, qty, price, orderType } = req.body;
 
@@ -61,25 +62,19 @@ app.post("/api/neworder", auth, async (req, res) => {
     qty,
     price,
     orderType,
-    user: req.user._id,
+    user: req.user.id, // link order to current user
   });
 
   const savedOrder = await order.save();
   res.status(201).json(savedOrder);
 });
 
-// ---------------- ALL ORDERS ----------------
+// get orders of current user only
 app.get("/api/allorders", auth, async (req, res) => {
-  try {
-    const orders = await OrdersModel.find({ user: req.user._id }).sort({
-      _id: -1,
-    });
-    res.json(orders);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch orders" });
-  }
+  const orders = await OrdersModel.find({ user: req.user.id }).sort({ _id: -1 });
+  res.json(orders);
 });
+
 // ---------------- HEALTH ----------------
 app.get("/", (req, res) => {
   res.send("🚀 Backend Running");
