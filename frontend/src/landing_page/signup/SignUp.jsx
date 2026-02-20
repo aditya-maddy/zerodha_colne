@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../../api"; // import the api instance
+import api from "../api"; // import the api instance
 import "./Signup.css";
 
 const Signup = () => {
@@ -23,7 +23,7 @@ const Signup = () => {
       localStorage.setItem("token", res.data.token);
 
       // Redirect to dashboard
-      window.location.href = "https://zerodha-colne-dshboard.vercel.app/dashboard";
+      window.location.href = "https://zerodha-colne-dshboard.vercel.app";
 
     } catch (err) {
       alert(err.response?.data?.message || "Signup failed");
