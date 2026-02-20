@@ -1,21 +1,28 @@
 import axios from "axios";
 
-const token = localStorage.getItem("token");
-
 const API = axios.create({
   baseURL: "https://zerodha-colne-zsx2.onrender.com",
-  headers: {
-    Authorization: `Bearer ${token}`, // JWT attached to all requests
-  },
 });
 
-// Optional: handle expired JWT
+// 🔥 Attach token dynamically before every request
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+// Handle expired token
 API.interceptors.response.use(
-  res => res,
-  err => {
+  (res) => res,
+  (err) => {
     if (err.response?.status === 401) {
       localStorage.removeItem("token");
-      window.location.href = "https://zerodha-colne-dshboard-w8n4.vercel.app/login";
+      window.location.href =
+        "https://zerodha-colne-dshboard.vercel.app/login";
     }
     return Promise.reject(err);
   }
