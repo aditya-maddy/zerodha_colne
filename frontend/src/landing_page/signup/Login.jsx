@@ -21,15 +21,6 @@ const handleLogin = async (e) => {
       },
       { withCredentials: true } 
     );
-
-    const token = res.data.token;
-    if (!token) {
-      alert("Login failed: no token received");
-      return;
-    }
-
-   
-
     // Redirect to dashboard
    setTimeout(() => {
       window.location.href = "https://zerodha-colne-dshboard.vercel.app";
