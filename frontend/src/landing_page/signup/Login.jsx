@@ -18,7 +18,8 @@ const handleLogin = async (e) => {
       {
         username: username.trim(),
         password: password.trim(),
-      }
+      },
+      { withCredentials: true } 
     );
 
     const token = res.data.token;
@@ -27,13 +28,12 @@ const handleLogin = async (e) => {
       return;
     }
 
-    // Save JWT
-    localStorage.setItem("token", token);
+   
 
     // Redirect to dashboard
    setTimeout(() => {
       window.location.href = "https://zerodha-colne-dshboard.vercel.app";
-    }, 5000); 
+    }, 3000); 
 
   } catch (err) {
     alert(err.response?.data?.message || "Login failed");

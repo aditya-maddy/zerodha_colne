@@ -42,6 +42,11 @@ mongoose
 // ---------------- ROUTES ----------------
 app.use("/api/users", userRouter);
 
+app.get("/api/checkauth", auth, (req, res) => {
+  res.json({ message: "Authorized" });
+});
+
+
 // all holdings (visible to all logged-in users)
 app.get("/api/allholdings", auth, async (req, res) => {
   const holdings = await HoldingsModel.find({});

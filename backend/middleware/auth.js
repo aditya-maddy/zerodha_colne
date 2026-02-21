@@ -16,4 +16,11 @@ const auth = (req, res, next) => {
   }
 };
 
+
+const token = jwt.sign(
+  { id: user._id },
+  process.env.JWT_SECRET,
+  { expiresIn: "1d" }   // ✅ 1 day expiry
+);
+
 module.exports = auth;
